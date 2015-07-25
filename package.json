@@ -1,0 +1,52 @@
+{
+    "name": "gh-boilerplate",
+    "description": "NodeGH plugin for demonstrating how to create NodeGH plugins",
+    "version": "0.2.0",
+    "author": {
+        "name": "Author",
+        "email": "email@email.com",
+        "web": "http://www.nodegh.io",
+        "twitter": "author"
+    },
+    "contributors": [
+        {
+            "name": "Eduardo Lundgren",
+            "email": "eduardolundgren@gmail.com",
+            "web": "http://www.eduardo.io",
+            "twitter": "eduardolundgren"
+        },
+        {
+            "name": "Zeno Rocha",
+            "email": "zno.rocha@gmail.com",
+            "web": "http://zenorocha.com",
+            "twitter": "zenorocha"
+        }
+    ],
+    "license": "BSD",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:node-gh/gh-boilerplate.git"
+    },
+    "bugs": {
+        "url": "https://github.com/node-gh/gh-boilerplate/issues"
+    },
+    "keywords": [
+        "gh", "nodegh", "boilerplate", "plugin"
+    ],
+    "bin": {
+        "gh-bo": "bin/boilerplate.js",
+        "gh-boilerplate": "bin/boilerplate.js"
+    },
+    "scripts": {
+        "lint": "node_modules/.bin/jshint bin/ test/",
+        "test": "node_modules/.bin/mocha --reporter list"
+    },
+    "devDependencies": {
+        "jshint": "^2.6.0",
+        "mocha": "^2.1.0"
+    },
+    "engines": {
+        "node": ">=0.12"
+    },
+    "preferGlobal": "true"
+}
