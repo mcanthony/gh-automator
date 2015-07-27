@@ -1,4 +1,4 @@
-# GH Boilerplate
+# GH Automator
 
 [![NPM version](http://img.shields.io/npm/v/gh-boilerplate.svg?style=flat)](http://npmjs.org/gh-boilerplate)
 [![NPM downloads](http://img.shields.io/npm/dm/gh-boilerplate.svg?style=flat)](http://npmjs.org/gh-boilerplate)
@@ -6,11 +6,11 @@
 [![Dependencies Status](http://img.shields.io/david/node-gh/gh-boilerplate.svg?style=flat)](https://david-dm.org/node-gh/gh-boilerplate)
 [![DevDependencies Status](http://img.shields.io/david/dev/node-gh/gh-boilerplate.svg?style=flat)](https://david-dm.org/node-gh/gh-boilerplate#info=devDependencies)
 
-![Puppeteer Octocat](https://cloud.githubusercontent.com/assets/398893/3528207/f16146ce-078c-11e4-96b0-4f7ab6adae1c.png)
+![Electrocat](https://octodex.github.com/images/electrocat.png)
 
-NodeGH plugin for demonstrating how to create NodeGH plugins :)
+NodeGH plugin for automating git processes :)
 
-> Maintained by [Your Name](https://github.com/yourname).
+> Maintained by [Dustin Ryerson](https://github.com/dustinryerson).
 
 ## Install
 
@@ -21,27 +21,62 @@ NodeGH plugin for demonstrating how to create NodeGH plugins :)
 ## Usage
 
 ```
-gh boilerplate
+gh automator
 ```
 
-> **Alias:** `gh bo`
+> **Alias:** `gh at`
+
+### 1. Cherry-pick fix
 
 Option             | Usage        | Type
 ---                | ---          | ---
-`-f`, `--foo`      | **Required** | `String`
+`-b`, `--branch` | **Required** | `String`
+`-cpf`, `--cherrypickfix`      | **Required** | `Boolean`
+`-pcm`, `--printcommitmessage` | **Required** | `Boolean`
+`-prb`, `--prbranch`, | **Optional** | `String`
+`-t`, `--ticket` | **Required** | `String`
+`-s`, `--submit`, | **Optional** | `Boolean`
+`-u`, `--user` | **Optional** | `String`
 
 #### Examples
 
-* **Shortcut** for showing hello world message.
+* Attempts to cherry-pick commits for LPS-12345 from the **master** branch to the current branch.
 
 	```
-gh bo
+gh at -cpf --ticket LPS-12345 --branch master
+	```
+	* Shorthand version:
+	```
+gh at -cpf -t LPS-12345 -b master
 	```
 
-* Show hello world message.
+* Attempts to cherry-pick commits for LPS-12345 from the **master** branch to the current branch and sends a pull request to githubUsername's ee-6.2.x branch if successful
 
 	```
-gh bo --foo
+gh at -cpf --ticket LPS-12345 --branch master --submit --user githubUsername --prbranch ee-6.2.x
+	```
+	* Shorthand version:
+	```
+gh at -cpf -t LPS-12345 -b master -s -u githubUserName -prb ee-6.2.x
+	```
+
+### 2. Print commit message
+
+Option             | Usage        | Type
+---                | ---          | ---
+`-pcm`, `--printcommitmessage` | **Required** | `Boolean`
+`-t`, `--ticket` | **Required** | `String`
+
+#### Examples
+
+* Prints all commit messages containing the LPS number entered
+
+	```
+gh at -pcm --ticket LPS-12345
+	```
+	* Shorthand version of previous example:
+	```
+gh at -pcm -t LPS-12345
 	```
 
 ## Testing
@@ -70,8 +105,8 @@ npm run-script test
 
 ## History
 
-* v0.0.1 September 12, 2013
-	* Start plugin using [gh-boilerplate](https://github.com/node-gh/gh-boilerplate)
+* v0.0.1 July 24, 2015
+	* Start plugin using [gh-automator](https://github.com/dustinryerson/gh-automator)
 
 ## License
 
