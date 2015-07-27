@@ -142,7 +142,8 @@ Automator.prototype.cherryPickFix = function(ticket, branch, user, prbranch) {
 };
 
 Automator.prototype.handleFailedCherryPick = function(git) {
-    var conflictingFiles,
+    var commitsUniqueToMasterBranch = [],
+        conflictingFiles,
         conflictingFilesArray,
         file,
         instance = this,
@@ -167,7 +168,13 @@ Automator.prototype.handleFailedCherryPick = function(git) {
         logger.log('\nLog on current branch for ' + file + ':\n' + logCurrentBranchResults.stdout);
         logger.log('\nLog on master branch for ' + file + ':\n' + logMasterBranchResults.stdout);
 
-        instance.parseCommitMessages(logCurrentBranchResults.stdout, logMasterBranchResults.stdout);
+        commitsUniqueToMasterBranch = instance.parseCommitMessages(logCurrentBranchResults.stdout, logMasterBranchResults.stdout);
+
+        logger.log('The following tickets have modified ' + file + ' on Master branch, but are not on your current branch:');
+
+        for (var j = 0; j < commitsUniqueToMasterBranch.length; j++) {
+            logger.log(commitsUniqueToMasterBranch[j]);
+        }
     }
 };
 
@@ -178,7 +185,7 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
         commitMessagesMasterBranchArray,
         commitMessagesMasterBranchTicketNumber,
         commitMessagesMasterBranchTicketNumberArray = [],
-        newerCommitsArray = [],
+        commitsUniqueToMasterBranch = [],
         parsedResults;
 
     commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
@@ -208,15 +215,15 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
 
             for (var l = k - 1; l >= 0; l--) {
                 if (commitMessagesMasterBranchTicketNumberArray[l] != commitMessagesMasterBranchTicketNumberArray[l + 1]) {
-                    newerCommitsArray.push(commitMessagesMasterBranchTicketNumberArray[l]);
-
-                    logger.log('Unique commit: ' + commitMessagesMasterBranchTicketNumberArray[l]);
+                    commitsUniqueToMasterBranch.push(commitMessagesMasterBranchTicketNumberArray[l]);
                 }
             }
 
             break;
         }
     }
+
+    return commitsUniqueToMasterBranch;
 };
 
 Automator.prototype.printCommitMessages = function(ticket) {
