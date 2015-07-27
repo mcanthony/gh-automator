@@ -165,8 +165,8 @@ Automator.prototype.handleFailedCherryPick = function(git) {
         logCurrentBranchResults = git_util.gitLogFile(file);
         logMasterBranchResults = git_util.gitLogFile(file, 'master');
 
-        logger.log('\nLog on current branch for ' + file + ':\n' + logCurrentBranchResults.stdout);
-        logger.log('\nLog on master branch for ' + file + ':\n' + logMasterBranchResults.stdout);
+        //logger.log('\nLog on current branch for ' + file + ':\n' + logCurrentBranchResults.stdout);
+        //logger.log('\nLog on master branch for ' + file + ':\n' + logMasterBranchResults.stdout);
 
         commitsUniqueToMasterBranch = instance.parseCommitMessages(logCurrentBranchResults.stdout, logMasterBranchResults.stdout);
 
@@ -191,22 +191,22 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
     commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
     commitMessagesMasterBranchArray = commitMessagesMasterBranch.split('\n');
 
-    console.log();
+    //console.log();
     for (var j = 0; j < commitMessagesCurrentBranchArray.length; j++) {
         commitMessagesCurrentBranchTicketNumber = commitMessagesCurrentBranchArray[j].substring(0, 9);
 
         commitMessagesCurrentBranchTicketNumberArray.push(commitMessagesCurrentBranchTicketNumber);
 
-        logger.log('Current branch LPS list: ' + commitMessagesCurrentBranchTicketNumber);
+        //logger.log('Current branch LPS list: ' + commitMessagesCurrentBranchTicketNumber);
     }
 
-    console.log();
+    //console.log();
     for (var i = 0; i < commitMessagesMasterBranchArray.length; i++) {
         commitMessagesMasterBranchTicketNumber = commitMessagesMasterBranchArray[i].substring(0, 9);
 
         commitMessagesMasterBranchTicketNumberArray.push(commitMessagesMasterBranchTicketNumber);
 
-        logger.log('Master branch LPS list: ' + commitMessagesMasterBranchTicketNumber);
+        //logger.log('Master branch LPS list: ' + commitMessagesMasterBranchTicketNumber);
     }
 
     for (var k = 0; k < 10; k++) {
