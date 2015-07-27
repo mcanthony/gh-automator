@@ -74,7 +74,7 @@ Option             | Usage        | Type
 	```
 gh at -pcm --ticket LPS-12345
 	```
-	* Shorthand version of previous example:
+	* Shorthand version:
 	```
 gh at -pcm -t LPS-12345
 	```
