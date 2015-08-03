@@ -28,7 +28,7 @@ Automator.DETAILS = {
     alias: 'at',
     commands: [
         'cherrypickfix',
-        'printcommitmessages',
+        'printcommitmessages'
     ],
     description: 'NodeGH plugin to automate git processes.',
     options: {
@@ -41,13 +41,13 @@ Automator.DETAILS = {
         'user': String
     },
     shorthands: {
-        'b': [  '--branch' ],
-        'cpf': [ '--cherrypickfix' ],
-        'pcm': [ '--printcommitmessages' ],
-        'prb': [  '--prbranch'],
-        's': [  '--submit'],
-        't': [  '--ticket'],
-        'u': [  '--user']
+        'b': ['--branch'],
+        'cpf': ['--cherrypickfix'],
+        'pcm': ['--printcommitmessages'],
+        'prb': ['--prbranch'],
+        's': ['--submit'],
+        't': ['--ticket'],
+        'u': ['--user']
     },
     payload: function(payload, options) {
         if (options.cherrypickfix) {
