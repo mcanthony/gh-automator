@@ -1,41 +1,27 @@
 {
-    "name": "gh-boilerplate",
-    "description": "NodeGH plugin for demonstrating how to create NodeGH plugins",
-    "version": "0.2.0",
+    "name": "gh-automator",
+    "description": "NodeGH plugin for automating git processes",
+    "version": "0.0.1",
     "author": {
-        "name": "Author",
-        "email": "email@email.com",
+        "name": "Dustin Ryerson",
+        "email": "dustin.ryerson@liferay.com.com",
         "web": "http://www.nodegh.io",
-        "twitter": "author"
+        "twitter": "https://twitter.com/dpryerson"
     },
-    "contributors": [
-        {
-            "name": "Eduardo Lundgren",
-            "email": "eduardolundgren@gmail.com",
-            "web": "http://www.eduardo.io",
-            "twitter": "eduardolundgren"
-        },
-        {
-            "name": "Zeno Rocha",
-            "email": "zno.rocha@gmail.com",
-            "web": "http://zenorocha.com",
-            "twitter": "zenorocha"
-        }
-    ],
     "license": "BSD",
     "repository": {
         "type": "git",
-        "url": "git@github.com:node-gh/gh-boilerplate.git"
+        "url": "https://github.com/dustinryerson/gh-automator.git"
     },
     "bugs": {
-        "url": "https://github.com/node-gh/gh-boilerplate/issues"
+        "url": "https://github.com/dustinryerson/gh-automator/issues"
     },
     "keywords": [
-        "gh", "nodegh", "boilerplate", "plugin"
+        "gh", "nodegh", "automator", "plugin"
     ],
     "bin": {
-        "gh-bo": "bin/boilerplate.js",
-        "gh-boilerplate": "bin/boilerplate.js"
+        "gh-at": "bin/automator.js",
+        "gh-automator": "bin/automator.js"
     },
     "scripts": {
         "lint": "node_modules/.bin/jshint bin/ test/",
