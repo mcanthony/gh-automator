@@ -1,8 +1,8 @@
 # GH Automator
 
-[![NPM version](http://img.shields.io/npm/v/gh-boilerplate.svg?style=flat)](http://npmjs.org/gh-boilerplate)
-[![NPM downloads](http://img.shields.io/npm/dm/gh-boilerplate.svg?style=flat)](http://npmjs.org/gh-boilerplate)
-[![Build Status](http://img.shields.io/travis/node-gh/gh-boilerplate/master.svg?style=flat)](https://travis-ci.org/node-gh/gh-boilerplate)
+[![NPM version](http://img.shields.io/npm/v/gh-boilerplate.svg?style=flat)](http://npmjs.org/gh-automator)
+[![NPM downloads](http://img.shields.io/npm/dm/gh-boilerplate.svg?style=flat)](http://npmjs.org/gh-automator)
+[![Build Status](http://img.shields.io/travis/node-gh/gh-boilerplate/master.svg?style=flat)](https://travis-ci.org/dustinryerson/gh-automator)
 [![Dependencies Status](http://img.shields.io/david/node-gh/gh-boilerplate.svg?style=flat)](https://david-dm.org/node-gh/gh-boilerplate)
 [![DevDependencies Status](http://img.shields.io/david/dev/node-gh/gh-boilerplate.svg?style=flat)](https://david-dm.org/node-gh/gh-boilerplate#info=devDependencies)
 
@@ -15,7 +15,7 @@ NodeGH plugin for automating git processes :)
 ## Install
 
 ```
-[sudo] npm install -g gh gh-boilerplate
+[sudo] npm install -g gh gh-automator
 ```
 
 ## Usage
