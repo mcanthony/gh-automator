@@ -13,7 +13,8 @@
 var GH_PATH = process.env.GH_PATH;
 
 // -- Requires -----------------------------------------------------------------
-var exec = require(GH_PATH + 'lib/exec'),
+var automatorConfig = require('../gh-plugin.json'),
+    exec = require(GH_PATH + 'lib/exec'),
     git_util = require('../lib/git'),
     git_command = process.env.GH_GIT_COMMAND || 'git',
     logger = require(GH_PATH + 'lib/logger');
