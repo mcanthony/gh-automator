@@ -221,28 +221,27 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
     commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
     commitMessagesFromBranchArray = commitMessagesFromBranch.split('\n');
 
-    //console.log();
     for (var j = 0; j < commitMessagesCurrentBranchArray.length; j++) {
-        commitMessagesCurrentBranchTicketNumber = commitMessagesCurrentBranchArray[j].substring(0, 9);
-
-        commitMessagesCurrentBranchTicketNumberArray.push(commitMessagesCurrentBranchTicketNumber);
-
-        //logger.log('Current branch LPS list: ' + commitMessagesCurrentBranchTicketNumber);
+        commitMessagesCurrentBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesCurrentBranchArray[j]);
+        
+        if (commitMessagesCurrentBranchTicketNumber != null) {
+            //logger.log('issues on Current branch: ' + commitMessagesCurrentBranchTicketNumber);
+            commitMessagesCurrentBranchTicketNumberArray.push(commitMessagesCurrentBranchTicketNumber.toString());
+        }
+       
     }
 
-    //console.log();
     for (var i = 0; i < commitMessagesFromBranchArray.length; i++) {
-        commitMessagesFromBranchTicketNumber = commitMessagesFromBranchArray[i].substring(0, 9);
-
-        commitMessagesFromBranchTicketNumberArray.push(commitMessagesFromBranchTicketNumber);
-
-        //logger.log('From branch LPS list: ' + commitMessagesFromBranchTicketNumber);
+        commitMessagesFromBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesFromBranchArray[i]);
+        
+        if (commitMessagesFromBranchTicketNumber != null) {
+            //logger.log('issues on From branch: ' + commitMessagesFromBranchTicketNumber);
+            commitMessagesFromBranchTicketNumberArray.push(commitMessagesFromBranchTicketNumber.toString());
+        }
     }
 
     for (var k = 0; k < 10; k++) {
         if (commitMessagesFromBranchTicketNumberArray[k] == commitMessagesCurrentBranchTicketNumberArray[0]) {
-            console.log();
-
             for (var l = k - 1; l >= 0; l--) {
                 if (commitMessagesFromBranchTicketNumberArray[l] != commitMessagesFromBranchTicketNumberArray[l + 1]) {
                     commitsUniqueToFromBranch.push(commitMessagesFromBranchTicketNumberArray[l]);
