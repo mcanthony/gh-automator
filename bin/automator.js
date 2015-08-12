@@ -97,7 +97,7 @@ Automator.prototype.run = function() {
     }
 };
 
-Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
+Automator.prototype.cherryPickFix = function(regex, fromBranch, user, prbranch) {
     var args = ['log'],
         cherryPickResult,
         git,
@@ -107,8 +107,8 @@ Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
 
     args.push('--pretty=%h', '--grep', regex);
 
-    if (branch) {
-        args.push(branch);
+    if (fromBranch) {
+        args.push(fromBranch);
     }
 
     git = exec.spawnSync(git_command, args);
@@ -137,7 +137,7 @@ Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
         logger.error(git.stderr);
     }
     else if (cherryPickResult.status !== 0) {
-        instance.handleFailedCherryPick(cherryPickResult);
+        instance.handleFailedCherryPick(fromBranch);
     }
     else {
         logger.log('\nSuccessful cherry-pick!');
@@ -148,14 +148,14 @@ Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
     }
 };
 
-Automator.prototype.handleFailedCherryPick = function(git) {
-    var commitsUniqueToMasterBranch = [],
+Automator.prototype.handleFailedCherryPick = function(fromBranch) {
+    var commitsUniqueToFromBranch = [],
         conflictingFiles,
         conflictingFilesArray,
         file,
         instance = this,
         logCurrentBranchResults,
-        logMasterBranchResults;
+        logFromBranchResults;
 
     conflictingFiles = git_util.gitStatus();
 
@@ -164,39 +164,39 @@ Automator.prototype.handleFailedCherryPick = function(git) {
     conflictingFilesArray = conflictingFiles.split('\n');
 
     for (var i = 0; i < conflictingFilesArray.length; i++) {
-        // Remove the status code preceding the file path
+        // Remove the status code preceding the file path when running 'git status -s'
         file = conflictingFilesArray[i].substring(3, i.length);
 
         logger.log('\nConflicting file: ' + file);
 
         logCurrentBranchResults = git_util.gitLogFile(file);
-        logMasterBranchResults = git_util.gitLogFile(file, 'master');
+        logFromBranchResults = git_util.gitLogFile(file, fromBranch);
 
         //logger.log('\nLog on current branch for ' + file + ':\n' + logCurrentBranchResults.stdout);
-        //logger.log('\nLog on master branch for ' + file + ':\n' + logMasterBranchResults.stdout);
+        //logger.log('\nLog on from branch for ' + file + ':\n' + logFromBranchResults.stdout);
 
-        commitsUniqueToMasterBranch = instance.parseCommitMessages(logCurrentBranchResults.stdout, logMasterBranchResults.stdout);
+        commitsUniqueToFromBranch = instance.parseCommitMessages(logCurrentBranchResults.stdout, logFromBranchResults.stdout);
 
-        logger.log('The following tickets have modified ' + file + ' on Master branch, but are not on your current branch:');
+        logger.log('The following issues have been committed to ' + file + ' on the ' + fromBranch + ' branch, but are not on your current branch:');
 
-        for (var j = 0; j < commitsUniqueToMasterBranch.length; j++) {
-            logger.log(commitsUniqueToMasterBranch[j]);
+        for (var j = 0; j < commitsUniqueToFromBranch.length; j++) {
+            logger.log(commitsUniqueToFromBranch[j]);
         }
     }
 };
 
-Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, commitMessagesMasterBranch) {
+Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, commitMessagesFromBranch) {
     var commitMessagesCurrentBranchArray,
         commitMessagesCurrentBranchTicketNumber,
         commitMessagesCurrentBranchTicketNumberArray = [],
-        commitMessagesMasterBranchArray,
-        commitMessagesMasterBranchTicketNumber,
-        commitMessagesMasterBranchTicketNumberArray = [],
-        commitsUniqueToMasterBranch = [],
+        commitMessagesFromBranchArray,
+        commitMessagesFromBranchTicketNumber,
+        commitMessagesFromBranchTicketNumberArray = [],
+        commitsUniqueToFromBranch = [],
         parsedResults;
 
     commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
-    commitMessagesMasterBranchArray = commitMessagesMasterBranch.split('\n');
+    commitMessagesFromBranchArray = commitMessagesFromBranch.split('\n');
 
     //console.log();
     for (var j = 0; j < commitMessagesCurrentBranchArray.length; j++) {
@@ -208,21 +208,21 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
     }
 
     //console.log();
-    for (var i = 0; i < commitMessagesMasterBranchArray.length; i++) {
-        commitMessagesMasterBranchTicketNumber = commitMessagesMasterBranchArray[i].substring(0, 9);
+    for (var i = 0; i < commitMessagesFromBranchArray.length; i++) {
+        commitMessagesFromBranchTicketNumber = commitMessagesFromBranchArray[i].substring(0, 9);
 
-        commitMessagesMasterBranchTicketNumberArray.push(commitMessagesMasterBranchTicketNumber);
+        commitMessagesFromBranchTicketNumberArray.push(commitMessagesFromBranchTicketNumber);
 
-        //logger.log('Master branch LPS list: ' + commitMessagesMasterBranchTicketNumber);
+        //logger.log('From branch LPS list: ' + commitMessagesFromBranchTicketNumber);
     }
 
     for (var k = 0; k < 10; k++) {
-        if (commitMessagesMasterBranchTicketNumberArray[k] == commitMessagesCurrentBranchTicketNumberArray[0]) {
+        if (commitMessagesFromBranchTicketNumberArray[k] == commitMessagesCurrentBranchTicketNumberArray[0]) {
             console.log();
 
             for (var l = k - 1; l >= 0; l--) {
-                if (commitMessagesMasterBranchTicketNumberArray[l] != commitMessagesMasterBranchTicketNumberArray[l + 1]) {
-                    commitsUniqueToMasterBranch.push(commitMessagesMasterBranchTicketNumberArray[l]);
+                if (commitMessagesFromBranchTicketNumberArray[l] != commitMessagesFromBranchTicketNumberArray[l + 1]) {
+                    commitsUniqueToFromBranch.push(commitMessagesFromBranchTicketNumberArray[l]);
                 }
             }
 
@@ -230,7 +230,7 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
         }
     }
 
-    return commitsUniqueToMasterBranch;
+    return commitsUniqueToFromBranch;
 };
 
 Automator.prototype.printCommitMessages = function(regex) {
