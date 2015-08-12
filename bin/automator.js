@@ -105,7 +105,7 @@ Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
         gitHashesArray,
         instance = this;
 
-    args.push('--pretty=%H', '--grep', regex);
+    args.push('--pretty=%h', '--grep', regex);
 
     if (branch) {
         args.push(branch);
@@ -124,6 +124,8 @@ Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
     //git_util.checkoutBranch(regex);
 
     for (var i = 0; i < gitHashesArray.length; i++) {
+        logger.log('Cherry-picking commit ' + gitHashesArray[i]);
+
         cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
 
         if (cherryPickResult.status !== 0) {
