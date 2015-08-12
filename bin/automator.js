@@ -117,9 +117,11 @@ Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
 
     gitHashesArray = gitHashes.split('\n').reverse();
 
-    git_util.createBranch(regex);
+    //let the user create and checkout their own branch in case they want to use a custom branch name. then just cherry-pick to the current branch
 
-    git_util.checkoutBranch(regex);
+    //git_util.createBranch(regex);
+
+    //git_util.checkoutBranch(regex);
 
     for (var i = 0; i < gitHashesArray.length; i++) {
         cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
