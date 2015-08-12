@@ -188,7 +188,7 @@ Automator.prototype.handleFailedCherryPick = function(fromBranch) {
 
     for (var i = 0; i < conflictingFilesArray.length; i++) {
         // Remove the status code preceding the file path when running 'git status -s'
-        file = conflictingFilesArray[i].substring(3, i.length);
+        file = conflictingFilesArray[i].substring(3);
 
         logger.log('\nConflicting file: ' + file);
 
