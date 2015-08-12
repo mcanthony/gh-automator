@@ -38,7 +38,7 @@ Automator.DETAILS = {
         'prbranch': String,
         'printcommitmessages': Boolean,
         'submit': Boolean,
-        'ticket': String,
+        'regex': String,
         'user': String
     },
     shorthands: {
@@ -47,15 +47,15 @@ Automator.DETAILS = {
         'pcm': ['--printcommitmessages'],
         'prb': ['--prbranch'],
         's': ['--submit'],
-        't': ['--ticket'],
+        'r': ['--regex'],
         'u': ['--user']
     },
     payload: function(payload, options) {
         if (options.cherrypickfix) {
             options.cherrypickfix = true;
 
-            if (options.ticket) {
-                options.ticket = payload[0];
+            if (options.regex) {
+                options.regex = payload[0];
             }
 
             if (options.branch) {
@@ -78,7 +78,7 @@ Automator.DETAILS = {
         if (options.printcommitmessages) {
             options.printcommitmessages = true;
 
-            options.ticket = payload[0];
+            options.regex = payload[0];
         }
     }
 };
@@ -89,15 +89,15 @@ Automator.prototype.run = function() {
         options = instance.options;
 
     if (options.cherrypickfix) {
-        instance.cherryPickFix(options.ticket, options.branch, options.user, options.prbranch);
+        instance.cherryPickFix(options.regex, options.branch, options.user, options.prbranch);
     }
 
     if (options.printcommitmessages) {
-        instance.printCommitMessages(options.ticket);
+        instance.printCommitMessages(options.regex);
     }
 };
 
-Automator.prototype.cherryPickFix = function(ticket, branch, user, prbranch) {
+Automator.prototype.cherryPickFix = function(regex, branch, user, prbranch) {
     var args = ['log'],
         cherryPickResult,
         git,
@@ -105,7 +105,7 @@ Automator.prototype.cherryPickFix = function(ticket, branch, user, prbranch) {
         gitHashesArray,
         instance = this;
 
-    args.push('--pretty=%H', '--grep', ticket);
+    args.push('--pretty=%H', '--grep', regex);
 
     if (branch) {
         args.push(branch);
@@ -117,9 +117,9 @@ Automator.prototype.cherryPickFix = function(ticket, branch, user, prbranch) {
 
     gitHashesArray = gitHashes.split('\n').reverse();
 
-    git_util.createBranch(ticket);
+    git_util.createBranch(regex);
 
-    git_util.checkoutBranch(ticket);
+    git_util.checkoutBranch(regex);
 
     for (var i = 0; i < gitHashesArray.length; i++) {
         cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
@@ -229,22 +229,22 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
     return commitsUniqueToMasterBranch;
 };
 
-Automator.prototype.printCommitMessages = function(ticket) {
+Automator.prototype.printCommitMessages = function(regex) {
     var args = ['log'],
         commitMessages,
         commitMessagesArray,
         git;
 
-    if (!ticket || ticket == '') {
+    if (!regex || regex == '') {
         logger.log('Cannot print commit messages.');
     }
 
-    args.push('--pretty=%s', '--grep', ticket);
+    args.push('--pretty=%s', '--grep', regex);
 
     git = exec.spawnSync(git_command, args);
 
     if (git.status !== 0) {
-        logger.log('Cannot print commit message for ' + ticket + '.');
+        logger.log('Cannot print commit message for ' + regex + '.');
     }
 
     commitMessages = git.stdout;
