@@ -119,6 +119,8 @@ Automator.prototype.cherryPickFix = function(ticket, branch, user, prbranch) {
 
     git_util.createBranch(ticket);
 
+    git_util.checkoutBranch(ticket);
+
     for (var i = 0; i < gitHashesArray.length; i++) {
         cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
 
