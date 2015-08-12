@@ -35,6 +35,7 @@ Automator.DETAILS = {
     options: {
         'branch': String,
         'cherrypickfix': Boolean,
+        'startinghash': String,
         'prbranch': String,
         'printcommitmessages': Boolean,
         'submit': Boolean,
@@ -44,6 +45,7 @@ Automator.DETAILS = {
     shorthands: {
         'b': ['--branch'],
         'cpf': ['--cherrypickfix'],
+        'sha': ['--startinghash'],
         'pcm': ['--printcommitmessages'],
         'prb': ['--prbranch'],
         's': ['--submit'],
@@ -62,15 +64,19 @@ Automator.DETAILS = {
                 options.branch = payload[1];
             }
 
+            if (options.startinghash) {
+                options.startinghash = payload[2];
+            }
+
             if (options.submit) {
                 options.submit = true;
 
                 if (options.user) {
-                    options.user = payload[2];
+                    options.user = payload[3];
                 }
 
                 if (options.prbranch) {
-                    options.prbranch = payload[3];
+                    options.prbranch = payload[4];
                 }
             }
         }
@@ -89,7 +95,7 @@ Automator.prototype.run = function() {
         options = instance.options;
 
     if (options.cherrypickfix) {
-        instance.cherryPickFix(options.regex, options.branch, options.user, options.prbranch);
+        instance.cherryPickFix(options.regex, options.branch, options.startinghash, options.user, options.prbranch);
     }
 
     if (options.printcommitmessages) {
@@ -97,7 +103,7 @@ Automator.prototype.run = function() {
     }
 };
 
-Automator.prototype.cherryPickFix = function(regex, fromBranch, user, prbranch) {
+Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, user, prbranch) {
     var args = ['log'],
         cherryPickResult,
         git,
@@ -123,12 +129,32 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, user, prbranch) 
 
     //git_util.checkoutBranch(regex);
 
+    var startCherryPicking = false;
+
     for (var i = 0; i < gitHashesArray.length; i++) {
+        if (startingHash == null) {
+            startCherryPicking = true;
+        }
+        else if (startingHash == gitHashesArray[i]) {
+            startCherryPicking = true;
+        }
+
+        if (!startCherryPicking) {
+            continue;
+        }
+
         logger.log('Cherry-picking commit ' + gitHashesArray[i]);
 
         cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
 
         if (cherryPickResult.status !== 0) {
+            instance.handleFailedCherryPick(fromBranch);
+            
+            if ((i + 1) < gitHashesArray.length) {
+                logger.log('\nIf you are able to manually resolve the conflict you can continue the ' +
+                    'cherry-picking process by re-running the previous command with the option -sha ' + gitHashesArray[i + 1] + '\n');
+            }
+
             break;
         }
     }
@@ -136,10 +162,7 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, user, prbranch) 
     if (git.status !== 0) {
         logger.error(git.stderr);
     }
-    else if (cherryPickResult.status !== 0) {
-        instance.handleFailedCherryPick(fromBranch);
-    }
-    else {
+    else if (cherryPickResult.status === 0) {
         logger.log('\nSuccessful cherry-pick!');
 
         if (user && prbranch) {
