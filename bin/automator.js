@@ -85,6 +85,10 @@ Automator.DETAILS = {
             options.printcommitmessages = true;
 
             options.regex = payload[0];
+
+            if (options.sourcebranch) {
+                options.sourcebranch = payload[1];
+            }
         }
     }
 };
@@ -99,13 +103,23 @@ Automator.prototype.run = function() {
     }
 
     if (options.printcommitmessages) {
-        instance.printCommitMessages(options.regex);
+        instance.printCommitMessages(options.regex, options.sourcebranch);
     }
 };
 
 Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prBranch) {
     var cherryPickResult,
         instance = this;
+
+    if (!sourceBranch) {
+        logger.warn('A branch to cherry-pick from must be set with the -b option\n');
+        return;
+    }
+
+     if (!regex) {
+        logger.warn('A regular expression must be set with the -r option\n');
+        return;
+    }
 
     var args = ['log', '--reverse', '--pretty=%h', '--grep', regex, sourceBranch];
 
@@ -173,7 +187,8 @@ Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
 
         var issuesFixedInSourceBranch = instance.parseCommitMessages(currentBranchLog.stdout, sourceBranchLog.stdout);
 
-        logger.log('The following issues have been committed to ' + unmergedFilePath + ' on the ' + sourceBranch + ' branch, but are not on your current branch:');
+        logger.log('The following issues have been committed to ' + unmergedFilePath + ' on the ' + sourceBranch + ' branch, ' + 
+            'but are not on your current branch:');
 
         for (var j = 0; j < issuesFixedInSourceBranch.length; j++) {
             logger.log(issuesFixedInSourceBranch[j]);
@@ -228,27 +243,19 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
     return commitsUniqueToSourceBranch;
 };
 
-Automator.prototype.printCommitMessages = function(regex) {
-    var args = ['log'],
-        commitMessages,
-        commitMessagesArray,
-        git;
-
+Automator.prototype.printCommitMessages = function(regex, branch) {
     if (!regex || regex == '') {
-        logger.log('Cannot print commit messages.');
+        logger.warn('A regular expression must be set with the -r option\n');
+        return;
     }
 
-    args.push('--reverse', '--pretty=%s', '--grep', regex);
+    var args = ['log', '--pretty=%s', '--grep', regex];
 
-    git = exec.spawnSync(git_command, args);
-
-    if (git.status !== 0) {
-        logger.log('Cannot print commit message for ' + regex + '.');
+    if (branch) {
+        args.push(branch);
     }
 
-    commitMessages = git.stdout;
-
-    commitMessagesArray = commitMessages.split('\n');
+    var commitMessagesArray = exec.spawnSync(git_command, args).stdout.split('\n');
 
     for (var i = 0; i < commitMessagesArray.length; i++) {
         logger.log(commitMessagesArray[i]);
