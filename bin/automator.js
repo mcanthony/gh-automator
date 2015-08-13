@@ -44,11 +44,11 @@ Automator.DETAILS = {
     },
     shorthands: {
         'b': ['--sourcebranch'],
-        'cpf': ['--cherrypickfix'],
-        'sha': ['--startinghash'],
-        'pcm': ['--printcommitmessages'],
-        'prb': ['--prbranch'],
-        's': ['--submit'],
+        'c': ['--cherrypickfix'],
+        's': ['--startinghash'],
+        'm': ['--printcommitmessages'],
+        'p': ['--prbranch'],
+        'S': ['--submit'],
         'r': ['--regex'],
         'u': ['--user']
     },
@@ -148,7 +148,7 @@ Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, 
             
             if ((i + 1) < gitHashArray.length) {
                 logger.log('\nIf you are able to manually resolve the conflict you can continue the ' +
-                    'cherry-picking process by re-running the previous command with the option -sha ' + gitHashArray[i + 1] + '\n');
+                    'cherry-picking process by re-running the previous command with the option -s ' + gitHashArray[i + 1] + '\n');
             }
 
             break;

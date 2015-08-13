@@ -30,13 +30,13 @@ gh automator
 
 Option             | Usage        | Type
 ---                | ---          | ---
-`-cpf`, `--cherrypickfix`      | **Required** | `Boolean`
+`-c`, `--cherrypickfix`      | **Required** | `Boolean`
 `-r`, `--regex` | **Required** | `String`
 `-b`, `--sourcebranch` | **Required** | `String`
-`-sha`, `--startinghash` | *Optional* | `String`
-`-s`, `--submit` | *Optional* | `Boolean`
+`-s`, `--startinghash` | *Optional* | `String`
+`-S`, `--submit` | *Optional* | `Boolean`
 `-u`, `--user` | *Optional* | `String`
-`-prb`, `--prbranch` | *Optional* | `String`
+`-p`, `--prbranch` | *Optional* | `String`
 
 #### Examples
 
@@ -47,7 +47,7 @@ gh automator --cherrypickfix --regex LPS-12345 --sourcebranch master
 	```
 	* Shorthand version:
 	```
-gh at -cpf -r LPS-12345 -b master
+gh at -c -r LPS-12345 -b master
 	```
 
 * Attempts to cherry-pick commits for LPS-12345 from the specified branch to the current branch and sends a pull request to githubUsername's ee-6.2.x branch if successful.
@@ -57,14 +57,14 @@ gh automator --cherrypickfix --regex LPS-12345 --sourcebranch master --submit --
 	```
 	* Shorthand version:
 	```
-gh at -cpf -r LPS-12345 -b master -s -u githubUserName -prb ee-6.2.x
+gh at -c -r LPS-12345 -b master -S -u githubUserName -p ee-6.2.x
 	```
 
 ### 2. Print commit messages
 
 Option             | Usage        | Type
 ---                | ---          | ---
-`-pcm`, `--printcommitmessage` | **Required** | `Boolean`
+`-m`, `--printcommitmessage` | **Required** | `Boolean`
 `-r`, `--regex` | **Required** | `String`
 `-b`, `--sourcebranch` | *Optional* | `String`
 
@@ -77,7 +77,7 @@ gh automator --printcommitmessage --regex LPS-12345
 	```
 	* Shorthand version:
 	```
-gh at -pcm -r LPS-12345
+gh at -m -r LPS-12345
 	```
 
 ## Testing
