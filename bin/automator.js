@@ -201,37 +201,43 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
         sourceBranchIssueKeyArray = [],
         commitsUniqueToSourceBranch = [];
 
+    var sourceBranchCommitMessageArray = sourceBranchCommitMessages.split('\n');
+
+    for (var i = 0; i < sourceBranchCommitMessageArray.length; i++) {
+        var issueKey = /[a-z]+-[0-9]+/i.exec(sourceBranchCommitMessageArray[i]);
+        
+        if (issueKey != null) {            
+            if (sourceBranchIssueKeyArray.indexOf(issueKey.toString()) == -1) { //creates unique list of issue keys in source branch
+                sourceBranchIssueKeyArray.push(issueKey.toString());
+            }
+        }
+    }
+
     var currentBranchCommitMessageArray = currentBranchCommitMessages.split('\n');
     
     for (var i = 0; i < currentBranchCommitMessageArray.length; i++) {
         var issueKey = /[a-z]+-[0-9]+/i.exec(currentBranchCommitMessageArray[i]);
         
         if (issueKey != null) {
-            //logger.log('issues on Current branch:  ' + issueKey);
-            currentBranchIssueKeyArray.push(issueKey.toString());
-        }
-    }
-
-    var sourceBranchCommitMessageArray = sourceBranchCommitMessages.split('\n');
-
-    for (var i = 0; i < sourceBranchCommitMessageArray.length; i++) {
-        var issueKey = /[a-z]+-[0-9]+/i.exec(sourceBranchCommitMessageArray[i]);
-        
-        if (issueKey != null) {
-            //logger.log('issues on Source branch:   ' + issueKey);
-            sourceBranchIssueKeyArray.push(issueKey.toString());
-        }
-    }
-
-    for (var i = 0; i < git_util.getLogFileLength(); i++) {
-        if (sourceBranchIssueKeyArray[i] == currentBranchIssueKeyArray[0]) { //iterate down through the source branch messages until we find an issue that matches the latest issue on the current branch
-            for (var j = i - 1; j >= 0; j--) { //iterate back up through the source branch messages
-                if (sourceBranchIssueKeyArray[j] != sourceBranchIssueKeyArray[j + 1]) { //"filter" the remaining messages so that consecutive issue keys are not added to the unique array
-                    commitsUniqueToSourceBranch.push(sourceBranchIssueKeyArray[j]);
-                }
+            if (currentBranchIssueKeyArray.indexOf(issueKey.toString()) == -1) { //creates unique list of issue keys in current branch
+                currentBranchIssueKeyArray.push(issueKey.toString());
             }
+        }
+    }
 
-            break;
+    //checks all the issue keys from the source branch to see if they are in the current branch. if not, add them to the commitsUniqueToSourceBranch array
+    for (var i = 0; i < sourceBranchIssueKeyArray.length; i++) { 
+        var foundMatch = false;
+
+        for (var j = 0; j < currentBranchIssueKeyArray.length; j++) {
+            if (sourceBranchIssueKeyArray[i] == currentBranchIssueKeyArray[j]) {
+                foundMatch = true;
+                break;
+            }
+        }
+
+        if (foundMatch == false) {
+            commitsUniqueToSourceBranch.push(sourceBranchIssueKeyArray[i]);
         }
     }
 
