@@ -197,30 +197,25 @@ Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
 };
 
 Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, commitMessagesSourceBranch) {
-    var commitMessagesCurrentBranchArray,
-        commitMessagesCurrentBranchTicketNumber,
-        commitMessagesCurrentBranchTicketNumberArray = [],
-        commitMessagesSourceBranchArray,
-        commitMessagesSourceBranchTicketNumber,
+    var commitMessagesCurrentBranchTicketNumberArray = [],
         commitMessagesSourceBranchTicketNumberArray = [],
-        commitsUniqueToSourceBranch = [],
-        parsedResults;
+        commitsUniqueToSourceBranch = [];
 
-    commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
-    commitMessagesSourceBranchArray = commitMessagesSourceBranch.split('\n');
-
+    var commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
+    
     for (var j = 0; j < commitMessagesCurrentBranchArray.length; j++) {
-        commitMessagesCurrentBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesCurrentBranchArray[j]);
+        var commitMessagesCurrentBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesCurrentBranchArray[j]);
         
         if (commitMessagesCurrentBranchTicketNumber != null) {
             //logger.log('issues on Current branch: ' + commitMessagesCurrentBranchTicketNumber);
             commitMessagesCurrentBranchTicketNumberArray.push(commitMessagesCurrentBranchTicketNumber.toString());
         }
-       
     }
 
+    var commitMessagesSourceBranchArray = commitMessagesSourceBranch.split('\n');
+
     for (var i = 0; i < commitMessagesSourceBranchArray.length; i++) {
-        commitMessagesSourceBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesSourceBranchArray[i]);
+        var commitMessagesSourceBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesSourceBranchArray[i]);
         
         if (commitMessagesSourceBranchTicketNumber != null) {
             //logger.log('issues on From branch: ' + commitMessagesSourceBranchTicketNumber);
