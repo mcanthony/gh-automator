@@ -15,7 +15,7 @@ NodeGH plugin for automating git processes :)
 ## Install
 
 ```
-[sudo] npm install -g gh gh-automator
+[sudo] npm install -g gh-automator
 ```
 
 ## Usage
@@ -30,53 +30,54 @@ gh automator
 
 Option             | Usage        | Type
 ---                | ---          | ---
-`-b`, `--branch` | **Required** | `String`
 `-cpf`, `--cherrypickfix`      | **Required** | `Boolean`
-`-pcm`, `--printcommitmessage` | **Required** | `Boolean`
-`-prb`, `--prbranch`, | **Optional** | `String`
-`-t`, `--ticket` | **Required** | `String`
-`-s`, `--submit`, | **Optional** | `Boolean`
-`-u`, `--user` | **Optional** | `String`
+`-r`, `--regex` | **Required** | `String`
+`-b`, `--sourcebranch` | **Required** | `String`
+`-sha`, `--startinghash` | *Optional* | `String`
+`-s`, `--submit` | *Optional* | `Boolean`
+`-u`, `--user` | *Optional* | `String`
+`-prb`, `--prbranch` | *Optional* | `String`
 
 #### Examples
 
-* Attempts to cherry-pick commits for LPS-12345 from the **master** branch to the current branch.
+* Attempts to cherry-pick commits where the commit message contains a regular expression (ie "LPS-12345") specified by the --regex option, from the branch specified by the --sourcebranch option, to the current branch.
 
 	```
-gh at -cpf --ticket LPS-12345 --branch master
+gh automator --cherrypickfix --regex LPS-12345 --sourcebranch master
 	```
 	* Shorthand version:
 	```
-gh at -cpf -t LPS-12345 -b master
+gh at -cpf -r LPS-12345 -b master
 	```
 
-* Attempts to cherry-pick commits for LPS-12345 from the **master** branch to the current branch and sends a pull request to githubUsername's ee-6.2.x branch if successful
+* Attempts to cherry-pick commits for LPS-12345 from the specified branch to the current branch and sends a pull request to githubUsername's ee-6.2.x branch if successful.
 
 	```
-gh at -cpf --ticket LPS-12345 --branch master --submit --user githubUsername --prbranch ee-6.2.x
+gh automator --cherrypickfix --regex LPS-12345 --sourcebranch master --submit --user githubUsername --prbranch ee-6.2.x
 	```
 	* Shorthand version:
 	```
-gh at -cpf -t LPS-12345 -b master -s -u githubUserName -prb ee-6.2.x
+gh at -cpf -r LPS-12345 -b master -s -u githubUserName -prb ee-6.2.x
 	```
 
-### 2. Print commit message
+### 2. Print commit messages
 
 Option             | Usage        | Type
 ---                | ---          | ---
 `-pcm`, `--printcommitmessage` | **Required** | `Boolean`
-`-t`, `--ticket` | **Required** | `String`
+`-r`, `--regex` | **Required** | `String`
+`-b`, `--sourcebranch` | *Optional* | `String`
 
 #### Examples
 
-* Prints all commit messages containing the LPS number entered
+* Prints all commit messages on the current branch containing the regular expression specified. A different branch can be specified by the --sourcebranch option.
 
 	```
-gh at -pcm --ticket LPS-12345
+gh automator --printcommitmessage --regex LPS-12345
 	```
 	* Shorthand version:
 	```
-gh at -pcm -t LPS-12345
+gh at -pcm -r LPS-12345
 	```
 
 ## Testing
