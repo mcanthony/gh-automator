@@ -103,39 +103,21 @@ Automator.prototype.run = function() {
     }
 };
 
-Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prbranch) {
-    var args = ['log'],
-        cherryPickResult,
-        git,
-        gitHashes,
-        gitHashesArray,
+Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prBranch) {
+    var cherryPickResult,
         instance = this;
 
-    args.push('--reverse', '--pretty=%h', '--grep', regex);
+    var args = ['log', '--reverse', '--pretty=%h', '--grep', regex, sourceBranch];
 
-    if (sourceBranch) {
-        args.push(sourceBranch);
-    }
-
-    git = exec.spawnSync(git_command, args);
-
-    gitHashes = git.stdout;
-
-    gitHashesArray = gitHashes.split('\n');
-
-    //let the user create and checkout their own branch in case they want to use a custom branch name. then just cherry-pick to the current branch
-
-    //git_util.createBranch(regex);
-
-    //git_util.checkoutBranch(regex);
+    var gitHashArray = exec.spawnSync(git_command, args).stdout.split('\n');
 
     var startCherryPicking = false;
 
-    for (var i = 0; i < gitHashesArray.length; i++) {
+    for (var i = 0; i < gitHashArray.length; i++) {
         if (startingHash == null) {
             startCherryPicking = true;
         }
-        else if (startingHash == gitHashesArray[i]) {
+        else if (startingHash == gitHashArray[i]) {
             startCherryPicking = true;
         }
 
@@ -143,30 +125,27 @@ Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, 
             continue;
         }
 
-        logger.log('Cherry-picking commit ' + gitHashesArray[i]);
+        logger.log('Cherry-picking commit ' + gitHashArray[i]);
 
-        cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
+        cherryPickResult = git_util.cherryPickCommit(gitHashArray[i]);
 
         if (cherryPickResult.status !== 0) {
             instance.handleFailedCherryPick(sourceBranch);
             
-            if ((i + 1) < gitHashesArray.length) {
+            if ((i + 1) < gitHashArray.length) {
                 logger.log('\nIf you are able to manually resolve the conflict you can continue the ' +
-                    'cherry-picking process by re-running the previous command with the option -sha ' + gitHashesArray[i + 1] + '\n');
+                    'cherry-picking process by re-running the previous command with the option -sha ' + gitHashArray[i + 1] + '\n');
             }
 
             break;
         }
     }
 
-    if (git.status !== 0) {
-        logger.error(git.stderr);
-    }
-    else if (cherryPickResult.status === 0) {
+    if (cherryPickResult.status === 0) {
         logger.log('\nSuccessful cherry-pick!');
 
-        if (user && prbranch) {
-            git_util.sendPullRequest(user, prbranch);
+        if (user && prBranch) {
+            git_util.sendPullRequest(user, prBranch);
         }
     }
 };
