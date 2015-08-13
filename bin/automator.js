@@ -33,7 +33,7 @@ Automator.DETAILS = {
     ],
     description: 'NodeGH plugin to automate git processes.',
     options: {
-        'branch': String,
+        'sourcebranch': String,
         'cherrypickfix': Boolean,
         'startinghash': String,
         'prbranch': String,
@@ -43,7 +43,7 @@ Automator.DETAILS = {
         'user': String
     },
     shorthands: {
-        'b': ['--branch'],
+        'b': ['--sourcebranch'],
         'cpf': ['--cherrypickfix'],
         'sha': ['--startinghash'],
         'pcm': ['--printcommitmessages'],
@@ -60,8 +60,8 @@ Automator.DETAILS = {
                 options.regex = payload[0];
             }
 
-            if (options.branch) {
-                options.branch = payload[1];
+            if (options.sourcebranch) {
+                options.sourcebranch = payload[1];
             }
 
             if (options.startinghash) {
@@ -95,7 +95,7 @@ Automator.prototype.run = function() {
         options = instance.options;
 
     if (options.cherrypickfix) {
-        instance.cherryPickFix(options.regex, options.branch, options.startinghash, options.user, options.prbranch);
+        instance.cherryPickFix(options.regex, options.sourcebranch, options.startinghash, options.user, options.prbranch);
     }
 
     if (options.printcommitmessages) {
