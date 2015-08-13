@@ -111,7 +111,7 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, us
         gitHashesArray,
         instance = this;
 
-    args.push('--pretty=%h', '--grep', regex);
+    args.push('--reverse', '--pretty=%h', '--grep', regex);
 
     if (fromBranch) {
         args.push(fromBranch);
@@ -121,7 +121,7 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, us
 
     gitHashes = git.stdout;
 
-    gitHashesArray = gitHashes.split('\n').reverse();
+    gitHashesArray = gitHashes.split('\n');
 
     //let the user create and checkout their own branch in case they want to use a custom branch name. then just cherry-pick to the current branch
 
@@ -265,7 +265,7 @@ Automator.prototype.printCommitMessages = function(regex) {
         logger.log('Cannot print commit messages.');
     }
 
-    args.push('--pretty=%s', '--grep', regex);
+    args.push('--reverse', '--pretty=%s', '--grep', regex);
 
     git = exec.spawnSync(git_command, args);
 
@@ -275,7 +275,7 @@ Automator.prototype.printCommitMessages = function(regex) {
 
     commitMessages = git.stdout;
 
-    commitMessagesArray = commitMessages.split('\n').reverse();
+    commitMessagesArray = commitMessages.split('\n');
 
     for (var i = 0; i < commitMessagesArray.length; i++) {
         logger.log(commitMessagesArray[i]);
