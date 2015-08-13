@@ -185,13 +185,13 @@ Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
         var currentBranchLog = git_util.gitLogFile(unmergedFilePath);
         var sourceBranchLog = git_util.gitLogFile(unmergedFilePath, sourceBranch);
 
-        var issuesFixedInSourceBranch = instance.parseCommitMessages(currentBranchLog.stdout, sourceBranchLog.stdout);
+        var issuesUniqueToSourceBranch = instance.parseCommitMessages(currentBranchLog.stdout, sourceBranchLog.stdout);
 
         logger.log('The following issues have been committed to ' + unmergedFilePath + ' on the ' + sourceBranch + ' branch, ' + 
             'but are not on your current branch:');
 
-        for (var j = 0; j < issuesFixedInSourceBranch.length; j++) {
-            logger.log(issuesFixedInSourceBranch[j]);
+        for (var j = 0; j < issuesUniqueToSourceBranch.length; j++) {
+            logger.log(issuesUniqueToSourceBranch[j]);
         }
     }
 };
@@ -199,7 +199,7 @@ Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
 Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, sourceBranchCommitMessages) {
     var currentBranchIssueKeyArray = [],
         sourceBranchIssueKeyArray = [],
-        commitsUniqueToSourceBranch = [];
+        issuesUniqueToSourceBranch = [];
 
     var sourceBranchCommitMessageArray = sourceBranchCommitMessages.split('\n');
 
@@ -225,7 +225,8 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
         }
     }
 
-    //checks all the issue keys from the source branch to see if they are in the current branch. if not, add them to the commitsUniqueToSourceBranch array
+    //checks all the issue keys from the source branch to see if they are in the current branch.
+    //if they are not, add them to the issuesUniqueToSourceBranch array
     for (var i = 0; i < sourceBranchIssueKeyArray.length; i++) { 
         var foundMatch = false;
 
@@ -237,11 +238,11 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
         }
 
         if (foundMatch == false) {
-            commitsUniqueToSourceBranch.push(sourceBranchIssueKeyArray[i]);
+            issuesUniqueToSourceBranch.push(sourceBranchIssueKeyArray[i]);
         }
     }
 
-    return commitsUniqueToSourceBranch;
+    return issuesUniqueToSourceBranch;
 };
 
 Automator.prototype.printCommitMessages = function(regex, branch) {
