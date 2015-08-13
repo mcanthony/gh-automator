@@ -223,7 +223,7 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
         }
     }
 
-    for (var i = 0; i < 20; i++) { //hard coded to match the value of --max-count in gitLogFile() function in git.js
+    for (var i = 0; i < git_util.getLogFileLength(); i++) {
         if (sourceBranchIssueKeyArray[i] == currentBranchIssueKeyArray[0]) { //iterate down through the source branch messages until we find an issue that matches the latest issue on the current branch
             for (var j = i - 1; j >= 0; j--) { //iterate back up through the source branch messages
                 if (sourceBranchIssueKeyArray[j] != sourceBranchIssueKeyArray[j + 1]) { //"filter" the remaining messages so that consecutive issue keys are not added to the unique array
