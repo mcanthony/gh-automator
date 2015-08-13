@@ -196,38 +196,38 @@ Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
     }
 };
 
-Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, commitMessagesSourceBranch) {
-    var commitMessagesCurrentBranchTicketNumberArray = [],
-        commitMessagesSourceBranchTicketNumberArray = [],
+Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, sourceBranchCommitMessages) {
+    var currentBranchIssueKeyArray = [],
+        sourceBranchIssueKeyArray = [],
         commitsUniqueToSourceBranch = [];
 
-    var commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
+    var currentBranchCommitMessageArray = currentBranchCommitMessages.split('\n');
     
-    for (var j = 0; j < commitMessagesCurrentBranchArray.length; j++) {
-        var commitMessagesCurrentBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesCurrentBranchArray[j]);
+    for (var j = 0; j < currentBranchCommitMessageArray.length; j++) {
+        var issueKey = /[a-z]+-[0-9]+/i.exec(currentBranchCommitMessageArray[j]);
         
-        if (commitMessagesCurrentBranchTicketNumber != null) {
-            //logger.log('issues on Current branch: ' + commitMessagesCurrentBranchTicketNumber);
-            commitMessagesCurrentBranchTicketNumberArray.push(commitMessagesCurrentBranchTicketNumber.toString());
+        if (issueKey != null) {
+            //logger.log('issues on Current branch: ' + issueKey);
+            currentBranchIssueKeyArray.push(issueKey.toString());
         }
     }
 
-    var commitMessagesSourceBranchArray = commitMessagesSourceBranch.split('\n');
+    var sourceBranchCommitMessageArray = sourceBranchCommitMessages.split('\n');
 
-    for (var i = 0; i < commitMessagesSourceBranchArray.length; i++) {
-        var commitMessagesSourceBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesSourceBranchArray[i]);
+    for (var i = 0; i < sourceBranchCommitMessageArray.length; i++) {
+        var issueKey = /[a-z]+-[0-9]+/i.exec(sourceBranchCommitMessageArray[i]);
         
-        if (commitMessagesSourceBranchTicketNumber != null) {
-            //logger.log('issues on From branch: ' + commitMessagesSourceBranchTicketNumber);
-            commitMessagesSourceBranchTicketNumberArray.push(commitMessagesSourceBranchTicketNumber.toString());
+        if (issueKey != null) {
+            //logger.log('issues on From branch: ' + issueKey);
+            sourceBranchIssueKeyArray.push(issueKey.toString());
         }
     }
 
     for (var k = 0; k < 10; k++) {
-        if (commitMessagesSourceBranchTicketNumberArray[k] == commitMessagesCurrentBranchTicketNumberArray[0]) {
+        if (sourceBranchIssueKeyArray[k] == currentBranchIssueKeyArray[0]) {
             for (var l = k - 1; l >= 0; l--) {
-                if (commitMessagesSourceBranchTicketNumberArray[l] != commitMessagesSourceBranchTicketNumberArray[l + 1]) {
-                    commitsUniqueToSourceBranch.push(commitMessagesSourceBranchTicketNumberArray[l]);
+                if (sourceBranchIssueKeyArray[l] != sourceBranchIssueKeyArray[l + 1]) {
+                    commitsUniqueToSourceBranch.push(sourceBranchIssueKeyArray[l]);
                 }
             }
 
