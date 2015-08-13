@@ -103,7 +103,7 @@ Automator.prototype.run = function() {
     }
 };
 
-Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, user, prbranch) {
+Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prbranch) {
     var args = ['log'],
         cherryPickResult,
         git,
@@ -113,8 +113,8 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, us
 
     args.push('--reverse', '--pretty=%h', '--grep', regex);
 
-    if (fromBranch) {
-        args.push(fromBranch);
+    if (sourceBranch) {
+        args.push(sourceBranch);
     }
 
     git = exec.spawnSync(git_command, args);
@@ -148,7 +148,7 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, us
         cherryPickResult = git_util.cherryPickCommit(gitHashesArray[i]);
 
         if (cherryPickResult.status !== 0) {
-            instance.handleFailedCherryPick(fromBranch);
+            instance.handleFailedCherryPick(sourceBranch);
             
             if ((i + 1) < gitHashesArray.length) {
                 logger.log('\nIf you are able to manually resolve the conflict you can continue the ' +
@@ -171,7 +171,7 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, us
     }
 };
 
-Automator.prototype.handleFailedCherryPick = function(fromBranch) {
+Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
     var instance = this;
 
     var fileStatusArray = git_util.gitStatus().stdout.split('\n');
@@ -190,11 +190,11 @@ Automator.prototype.handleFailedCherryPick = function(fromBranch) {
         logger.log('\nUnmerged file: ' + unmergedFilePath);
 
         var currentBranchLog = git_util.gitLogFile(unmergedFilePath);
-        var fromBranchLog = git_util.gitLogFile(unmergedFilePath, fromBranch);
+        var sourceBranchLog = git_util.gitLogFile(unmergedFilePath, sourceBranch);
 
-        var issuesFixedInSourceBranch = instance.parseCommitMessages(currentBranchLog.stdout, fromBranchLog.stdout);
+        var issuesFixedInSourceBranch = instance.parseCommitMessages(currentBranchLog.stdout, sourceBranchLog.stdout);
 
-        logger.log('The following issues have been committed to ' + unmergedFilePath + ' on the ' + fromBranch + ' branch, but are not on your current branch:');
+        logger.log('The following issues have been committed to ' + unmergedFilePath + ' on the ' + sourceBranch + ' branch, but are not on your current branch:');
 
         for (var j = 0; j < issuesFixedInSourceBranch.length; j++) {
             logger.log(issuesFixedInSourceBranch[j]);
@@ -202,18 +202,18 @@ Automator.prototype.handleFailedCherryPick = function(fromBranch) {
     }
 };
 
-Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, commitMessagesFromBranch) {
+Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, commitMessagesSourceBranch) {
     var commitMessagesCurrentBranchArray,
         commitMessagesCurrentBranchTicketNumber,
         commitMessagesCurrentBranchTicketNumberArray = [],
-        commitMessagesFromBranchArray,
-        commitMessagesFromBranchTicketNumber,
-        commitMessagesFromBranchTicketNumberArray = [],
-        commitsUniqueToFromBranch = [],
+        commitMessagesSourceBranchArray,
+        commitMessagesSourceBranchTicketNumber,
+        commitMessagesSourceBranchTicketNumberArray = [],
+        commitsUniqueToSourceBranch = [],
         parsedResults;
 
     commitMessagesCurrentBranchArray = commitMessagesCurrentBranch.split('\n');
-    commitMessagesFromBranchArray = commitMessagesFromBranch.split('\n');
+    commitMessagesSourceBranchArray = commitMessagesSourceBranch.split('\n');
 
     for (var j = 0; j < commitMessagesCurrentBranchArray.length; j++) {
         commitMessagesCurrentBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesCurrentBranchArray[j]);
@@ -225,20 +225,20 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
        
     }
 
-    for (var i = 0; i < commitMessagesFromBranchArray.length; i++) {
-        commitMessagesFromBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesFromBranchArray[i]);
+    for (var i = 0; i < commitMessagesSourceBranchArray.length; i++) {
+        commitMessagesSourceBranchTicketNumber = /[a-z]+-[0-9]+/i.exec(commitMessagesSourceBranchArray[i]);
         
-        if (commitMessagesFromBranchTicketNumber != null) {
-            //logger.log('issues on From branch: ' + commitMessagesFromBranchTicketNumber);
-            commitMessagesFromBranchTicketNumberArray.push(commitMessagesFromBranchTicketNumber.toString());
+        if (commitMessagesSourceBranchTicketNumber != null) {
+            //logger.log('issues on From branch: ' + commitMessagesSourceBranchTicketNumber);
+            commitMessagesSourceBranchTicketNumberArray.push(commitMessagesSourceBranchTicketNumber.toString());
         }
     }
 
     for (var k = 0; k < 10; k++) {
-        if (commitMessagesFromBranchTicketNumberArray[k] == commitMessagesCurrentBranchTicketNumberArray[0]) {
+        if (commitMessagesSourceBranchTicketNumberArray[k] == commitMessagesCurrentBranchTicketNumberArray[0]) {
             for (var l = k - 1; l >= 0; l--) {
-                if (commitMessagesFromBranchTicketNumberArray[l] != commitMessagesFromBranchTicketNumberArray[l + 1]) {
-                    commitsUniqueToFromBranch.push(commitMessagesFromBranchTicketNumberArray[l]);
+                if (commitMessagesSourceBranchTicketNumberArray[l] != commitMessagesSourceBranchTicketNumberArray[l + 1]) {
+                    commitsUniqueToSourceBranch.push(commitMessagesSourceBranchTicketNumberArray[l]);
                 }
             }
 
@@ -246,7 +246,7 @@ Automator.prototype.parseCommitMessages = function(commitMessagesCurrentBranch, 
         }
     }
 
-    return commitsUniqueToFromBranch;
+    return commitsUniqueToSourceBranch;
 };
 
 Automator.prototype.printCommitMessages = function(regex) {
