@@ -172,38 +172,32 @@ Automator.prototype.cherryPickFix = function(regex, fromBranch, startingHash, us
 };
 
 Automator.prototype.handleFailedCherryPick = function(fromBranch) {
-    var commitsUniqueToFromBranch = [],
-        conflictingFiles,
-        conflictingFilesArray,
-        file,
-        instance = this,
-        logCurrentBranchResults,
-        logFromBranchResults;
+    var instance = this;
 
-    conflictingFiles = git_util.gitStatus();
+    var fileStatusArray = git_util.gitStatus().stdout.split('\n');
 
-    conflictingFiles = conflictingFiles.stdout;
+    for (var i = 0; i < fileStatusArray.length; i++) {
+        //see ftp://www.kernel.org/pub/software/scm/git/docs/git-status.html for git status Short Format
+        var codeX = fileStatusArray[i].substring(0, 1);
+        var codeY = fileStatusArray[i].substring(0, 2);
+        
+        if (codeX != "U" && codeY != "U") {
+            continue;
+        };
+        
+        var unmergedFilePath = fileStatusArray[i].substring(3);
 
-    conflictingFilesArray = conflictingFiles.split('\n');
+        logger.log('\nUnmerged file: ' + unmergedFilePath);
 
-    for (var i = 0; i < conflictingFilesArray.length; i++) {
-        // Remove the status code preceding the file path when running 'git status -s'
-        file = conflictingFilesArray[i].substring(3);
+        var currentBranchLog = git_util.gitLogFile(unmergedFilePath);
+        var fromBranchLog = git_util.gitLogFile(unmergedFilePath, fromBranch);
 
-        logger.log('\nConflicting file: ' + file);
+        var issuesFixedInSourceBranch = instance.parseCommitMessages(currentBranchLog.stdout, fromBranchLog.stdout);
 
-        logCurrentBranchResults = git_util.gitLogFile(file);
-        logFromBranchResults = git_util.gitLogFile(file, fromBranch);
+        logger.log('The following issues have been committed to ' + unmergedFilePath + ' on the ' + fromBranch + ' branch, but are not on your current branch:');
 
-        //logger.log('\nLog on current branch for ' + file + ':\n' + logCurrentBranchResults.stdout);
-        //logger.log('\nLog on from branch for ' + file + ':\n' + logFromBranchResults.stdout);
-
-        commitsUniqueToFromBranch = instance.parseCommitMessages(logCurrentBranchResults.stdout, logFromBranchResults.stdout);
-
-        logger.log('The following issues have been committed to ' + file + ' on the ' + fromBranch + ' branch, but are not on your current branch:');
-
-        for (var j = 0; j < commitsUniqueToFromBranch.length; j++) {
-            logger.log(commitsUniqueToFromBranch[j]);
+        for (var j = 0; j < issuesFixedInSourceBranch.length; j++) {
+            logger.log(issuesFixedInSourceBranch[j]);
         }
     }
 };
