@@ -203,11 +203,11 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
 
     var currentBranchCommitMessageArray = currentBranchCommitMessages.split('\n');
     
-    for (var j = 0; j < currentBranchCommitMessageArray.length; j++) {
-        var issueKey = /[a-z]+-[0-9]+/i.exec(currentBranchCommitMessageArray[j]);
+    for (var i = 0; i < currentBranchCommitMessageArray.length; i++) {
+        var issueKey = /[a-z]+-[0-9]+/i.exec(currentBranchCommitMessageArray[i]);
         
         if (issueKey != null) {
-            //logger.log('issues on Current branch: ' + issueKey);
+            //logger.log('issues on Current branch:  ' + issueKey);
             currentBranchIssueKeyArray.push(issueKey.toString());
         }
     }
@@ -218,16 +218,16 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
         var issueKey = /[a-z]+-[0-9]+/i.exec(sourceBranchCommitMessageArray[i]);
         
         if (issueKey != null) {
-            //logger.log('issues on From branch: ' + issueKey);
+            //logger.log('issues on Source branch:   ' + issueKey);
             sourceBranchIssueKeyArray.push(issueKey.toString());
         }
     }
 
-    for (var k = 0; k < 10; k++) {
-        if (sourceBranchIssueKeyArray[k] == currentBranchIssueKeyArray[0]) {
-            for (var l = k - 1; l >= 0; l--) {
-                if (sourceBranchIssueKeyArray[l] != sourceBranchIssueKeyArray[l + 1]) {
-                    commitsUniqueToSourceBranch.push(sourceBranchIssueKeyArray[l]);
+    for (var i = 0; i < 20; i++) { //hard coded to match the value of --max-count in gitLogFile() function in git.js
+        if (sourceBranchIssueKeyArray[i] == currentBranchIssueKeyArray[0]) { //iterate down through the source branch messages until we find an issue that matches the latest issue on the current branch
+            for (var j = i - 1; j >= 0; j--) { //iterate back up through the source branch messages
+                if (sourceBranchIssueKeyArray[j] != sourceBranchIssueKeyArray[j + 1]) { //"filter" the remaining messages so that consecutive issue keys are not added to the unique array
+                    commitsUniqueToSourceBranch.push(sourceBranchIssueKeyArray[j]);
                 }
             }
 
