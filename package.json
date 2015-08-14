@@ -1,38 +1,41 @@
 {
-    "name": "gh-automator",
-    "description": "NodeGH plugin for automating git processes",
-    "version": "0.0.1",
-    "author": {
-        "name": "Dustin Ryerson",
-        "email": "dustin.ryerson@liferay.com",
-        "web": "http://www.nodegh.io",
-        "twitter": "https://twitter.com/dpryerson"
-    },
-    "license": "BSD",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/dustinryerson/gh-automator.git"
-    },
-    "bugs": {
-        "url": "https://github.com/dustinryerson/gh-automator/issues"
-    },
-    "keywords": [
-        "gh", "nodegh", "automator", "plugin"
-    ],
-    "bin": {
-        "gh-at": "bin/automator.js",
-        "gh-automator": "bin/automator.js"
-    },
-    "scripts": {
-        "lint": "node_modules/.bin/jshint bin/ test/",
-        "test": "node_modules/.bin/mocha --reporter list"
-    },
-    "devDependencies": {
-        "jshint": "^2.6.0",
-        "mocha": "^2.1.0"
-    },
-    "engines": {
-        "node": ">=0.12"
-    },
-    "preferGlobal": "true"
+  "name": "gh-automator",
+  "description": "NodeGH plugin for automating git processes",
+  "version": "1.0.0",
+  "author": {
+    "name": "Dustin Ryerson",
+    "email": "dustin.ryerson@liferay.com",
+    "web": "http://www.nodegh.io",
+    "twitter": "https://twitter.com/dpryerson"
+  },
+  "license": "BSD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dustinryerson/gh-automator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dustinryerson/gh-automator/issues"
+  },
+  "keywords": [
+    "gh",
+    "nodegh",
+    "automator",
+    "plugin"
+  ],
+  "bin": {
+    "gh-at": "bin/automator.js",
+    "gh-automator": "bin/automator.js"
+  },
+  "scripts": {
+    "lint": "node_modules/.bin/jshint bin/ test/",
+    "test": "node_modules/.bin/mocha --reporter list"
+  },
+  "devDependencies": {
+    "jshint": "^2.6.0",
+    "mocha": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=0.12"
+  },
+  "preferGlobal": "true"
 }
