@@ -95,6 +95,10 @@ Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, 
 
     var gitHashArray = exec.spawnSync(git_command, args).stdout.split('\n');
 
+    var args2 = ['log', '--reverse', '--pretty=%s', '--grep', regex, sourceBranch];
+
+    var gitMessageArray = exec.spawnSync(git_command, args2).stdout.split('\n');
+
     var startCherryPicking = false;
 
     for (var i = 0; i < gitHashArray.length; i++) {
@@ -109,7 +113,7 @@ Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, 
             continue;
         }
 
-        logger.log('Cherry-picking commit ' + gitHashArray[i]);
+        logger.log('Cherry-picking commit - ' + gitHashArray[i] + ' ' + gitMessageArray[i]);
 
         cherryPickResult = git_util.cherryPickCommit(gitHashArray[i]);
 
