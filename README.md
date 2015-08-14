@@ -34,13 +34,14 @@ Option             | Usage        | Type
 `-r`, `--regex` | **Required** | `String`
 `-b`, `--sourcebranch` | **Required** | `String`
 `-s`, `--startinghash` | *Optional* | `String`
+`-i`, `--uniqueissues` | *Optional* | `Boolean`
 `-S`, `--submit` | *Optional* | `Boolean`
 `-u`, `--user` | *Optional* | `String`
 `-p`, `--prbranch` | *Optional* | `String`
 
 #### Examples
 
-* Attempts to cherry-pick commits where the commit message contains a regular expression (ie "LPS-12345") specified by the --regex option, from the branch specified by the --sourcebranch option, to the current branch.
+* Attempts to cherry-pick commits where the commit message contains a regular expression (ie "LPS-12345") specified by the --regex option, from the branch specified by the --sourcebranch option, to the current branch. In the event of a failed cherry-pick the --startinghash and --uniqueissues options can be used.
 
 	```
 gh automator --cherrypickfix --regex LPS-12345 --sourcebranch master
