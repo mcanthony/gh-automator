@@ -59,6 +59,11 @@ Automator.prototype.run = function() {
     var instance = this,
         options = instance.options;
 
+    if (!options.cherrypickfix && !options.printcommitmessages) {
+        logger.warn('Please supply options --cherrypickfix or --printcommitmessages\n');
+        return;
+    }
+
     if (options.cherrypickfix) {
         if (!options.regex) {
             logger.warn('A regular expression must be set with the -r option\n');
