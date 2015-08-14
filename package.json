@@ -1,7 +1,7 @@
 {
   "name": "gh-automator",
   "description": "NodeGH plugin for automating git processes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Dustin Ryerson",
     "email": "dustin.ryerson@liferay.com",
