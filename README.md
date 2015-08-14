@@ -107,6 +107,9 @@ npm run-script test
 
 ## History
 
+* v1.0.0 August 14, 2015
+	* Cherry-pick and Print Commit Message feature completion
+
 * v0.0.1 July 24, 2015
 	* Start plugin using [gh-automator](https://github.com/dustinryerson/gh-automator)
 
