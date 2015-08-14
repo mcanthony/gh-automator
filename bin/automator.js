@@ -40,6 +40,7 @@ Automator.DETAILS = {
         'printcommitmessages': Boolean,
         'submit': Boolean,
         'regex': String,
+        'uniqueissues': Boolean,
         'user': String
     },
     shorthands: {
@@ -50,6 +51,7 @@ Automator.DETAILS = {
         'p': ['--prbranch'],
         'S': ['--submit'],
         'r': ['--regex'],
+        'i': ['--uniqueissues'],
         'u': ['--user']
     }
 };
@@ -75,7 +77,7 @@ Automator.prototype.run = function() {
             return;
         }
 
-        instance.cherryPickFix(options.regex, options.sourcebranch, options.startinghash, options.user, options.prbranch);
+        instance.cherryPickFix(options.regex, options.sourcebranch, options.startinghash, options.user, options.prbranch, options.uniqueissues);
     }
     else if (options.printcommitmessages) {
         if (!options.regex) {
@@ -87,7 +89,7 @@ Automator.prototype.run = function() {
     }
 };
 
-Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prBranch) {
+Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prBranch, printiIsuesUniqueToSourceBranch) {
     var cherryPickResult,
         instance = this;
 
@@ -118,7 +120,13 @@ Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, 
         cherryPickResult = git_util.cherryPickCommit(gitHashArray[i]);
 
         if (cherryPickResult.status !== 0) {
-            instance.handleFailedCherryPick(sourceBranch);
+
+            if (printiIsuesUniqueToSourceBranch) {
+                instance.handleFailedCherryPick(sourceBranch);
+            }
+            else {
+                logger.log('\nYou can re-run the previous command with the -i option to show issues unique to the ' + sourceBranch + ' branch');
+            }
             
             if ((i + 1) < gitHashArray.length) {
                 logger.log('\nIf you are able to manually resolve the conflict you can continue the ' +
@@ -146,15 +154,15 @@ Automator.prototype.handleFailedCherryPick = function(sourceBranch) {
     for (var i = 0; i < fileStatusArray.length; i++) {
         //see ftp://www.kernel.org/pub/software/scm/git/docs/git-status.html for git status Short Format
         var codeX = fileStatusArray[i].substring(0, 1);
-        var codeY = fileStatusArray[i].substring(0, 2);
-        
+        var codeY = fileStatusArray[i].substring(1, 2);
+
         if (codeX != "U" && codeY != "U") {
             continue;
         };
         
         var unmergedFilePath = fileStatusArray[i].substring(3);
 
-        logger.log('\nUnmerged file: ' + unmergedFilePath);
+        logger.log('\nUnmerged file: ' + unmergedFilePath + '\nComparing branches...');
 
         var currentBranchLog = git_util.gitLogFile(unmergedFilePath);
         var sourceBranchLog = git_util.gitLogFile(unmergedFilePath, sourceBranch);
