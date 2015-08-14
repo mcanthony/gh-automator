@@ -51,45 +51,6 @@ Automator.DETAILS = {
         'S': ['--submit'],
         'r': ['--regex'],
         'u': ['--user']
-    },
-    payload: function(payload, options) {
-        if (options.cherrypickfix) {
-            options.cherrypickfix = true;
-
-            if (options.regex) {
-                options.regex = payload[0];
-            }
-
-            if (options.sourcebranch) {
-                options.sourcebranch = payload[1];
-            }
-
-            if (options.startinghash) {
-                options.startinghash = payload[2];
-            }
-
-            if (options.submit) {
-                options.submit = true;
-
-                if (options.user) {
-                    options.user = payload[3];
-                }
-
-                if (options.prbranch) {
-                    options.prbranch = payload[4];
-                }
-            }
-        }
-
-        if (options.printcommitmessages) {
-            options.printcommitmessages = true;
-
-            options.regex = payload[0];
-
-            if (options.sourcebranch) {
-                options.sourcebranch = payload[1];
-            }
-        }
     }
 };
 
@@ -99,10 +60,24 @@ Automator.prototype.run = function() {
         options = instance.options;
 
     if (options.cherrypickfix) {
+        if (!options.regex) {
+            logger.warn('A regular expression must be set with the -r option\n');
+            return;
+        }
+
+        if (!options.sourcebranch) {
+            logger.warn('A branch to cherry-pick from must be set with the -b option\n');
+            return;
+        }
+
         instance.cherryPickFix(options.regex, options.sourcebranch, options.startinghash, options.user, options.prbranch);
     }
+    else if (options.printcommitmessages) {
+        if (!options.regex) {
+            logger.warn('A regular expression must be set with the -r option\n');
+            return;
+        }
 
-    if (options.printcommitmessages) {
         instance.printCommitMessages(options.regex, options.sourcebranch);
     }
 };
@@ -110,16 +85,6 @@ Automator.prototype.run = function() {
 Automator.prototype.cherryPickFix = function(regex, sourceBranch, startingHash, user, prBranch) {
     var cherryPickResult,
         instance = this;
-
-    if (!sourceBranch) {
-        logger.warn('A branch to cherry-pick from must be set with the -b option\n');
-        return;
-    }
-
-     if (!regex) {
-        logger.warn('A regular expression must be set with the -r option\n');
-        return;
-    }
 
     var args = ['log', '--reverse', '--pretty=%h', '--grep', regex, sourceBranch];
 
@@ -246,11 +211,6 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
 };
 
 Automator.prototype.printCommitMessages = function(regex, branch) {
-    if (!regex || regex == '') {
-        logger.warn('A regular expression must be set with the -r option\n');
-        return;
-    }
-
     var args = ['log', '--pretty=%s', '--grep', regex];
 
     if (branch) {
