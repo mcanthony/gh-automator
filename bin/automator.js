@@ -211,7 +211,7 @@ Automator.prototype.parseCommitMessages = function(currentBranchCommitMessages, 
 };
 
 Automator.prototype.printCommitMessages = function(regex, branch) {
-    var args = ['log', '--pretty=%s', '--grep', regex];
+   var args = ['log', '--pretty=%h %s', '--grep', regex];
 
     if (branch) {
         args.push(branch);
@@ -222,6 +222,8 @@ Automator.prototype.printCommitMessages = function(regex, branch) {
     for (var i = 0; i < commitMessagesArray.length; i++) {
         logger.log(commitMessagesArray[i]);
     }
+
+    logger.log();
 };
 
 exports.Impl = Automator;
